@@ -10,16 +10,15 @@ import (
 )
 
 func main() {
-	args := os.Args[1:]
-
 	var (
-		dbPath    = args[0]
-		namespace = ""
+		startsWithCapital = flag.Bool("sc", false, "whether to start with capitalized (title)")
+		namespace         = flag.String("ns", "Default", "namespace of fbs")
+		dbPath            = ""
 	)
+	flag.Parse()
+	dbPath = flag.Arg(0)
 
-	flag.StringVar(&namespace, "ns", "Default", "namespace")
-
-	result, err := lib.Generate(dbPath, namespace)
+	result, err := lib.Generate(dbPath, *namespace, *startsWithCapital)
 	if err != nil {
 		panic(err)
 	}

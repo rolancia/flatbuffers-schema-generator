@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func Generate(dbPath string, namespace string) (string, error) {
+func Generate(dbPath string, namespace string, capital bool) (string, error) {
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return "", err
@@ -23,7 +23,7 @@ func Generate(dbPath string, namespace string) (string, error) {
 	writeStringL(&b, newNamespace(namespace))
 
 	for tName, tRow := range j {
-		tys := inferType(tRow)
+		tys := inferType(tRow, capital)
 		writeStringL(&b, newStruct(tName, tys))
 	}
 
@@ -37,7 +37,7 @@ func writeStringL(b *strings.Builder, str string) {
 	}
 }
 
-func inferType(arr interface{}) []fbType {
+func inferType(arr interface{}, c bool) []fbType {
 	vof := reflect.ValueOf(arr).Index(0)
 	keys := vof.MapKeys()
 	sort.Slice(keys, func(i, j int) bool {
@@ -52,6 +52,9 @@ func inferType(arr interface{}) []fbType {
 			panic(fmt.Errorf("unknown type %s of %s", vt.String(), k))
 		}
 
+		if c {
+			k = strings.Title(k)
+		}
 		ret[i] = fbType{
 			name: k,
 			ty:   convertedTy,
