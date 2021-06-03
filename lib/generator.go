@@ -23,8 +23,8 @@ func Generate(dbPath string, namespace string, capital bool) (string, error) {
 	writeStringL(&b, newNamespace(namespace))
 
 	for tName, tRow := range j {
-		tys := inferType(tRow, capital)
-		writeStringL(&b, newStruct(tName, tys))
+		tys := inferType(tRow)
+		writeStringL(&b, newStruct(tName, tys, capital))
 	}
 
 	return b.String(), nil
@@ -37,7 +37,7 @@ func writeStringL(b *strings.Builder, str string) {
 	}
 }
 
-func inferType(arr interface{}, c bool) []fbType {
+func inferType(arr interface{}) []fbType {
 	vof := reflect.ValueOf(arr).Index(0)
 	keys := vof.MapKeys()
 	sort.Slice(keys, func(i, j int) bool {
@@ -52,9 +52,6 @@ func inferType(arr interface{}, c bool) []fbType {
 			panic(fmt.Errorf("unknown type %s of %s", vt.String(), k))
 		}
 
-		if c {
-			k = strings.Title(k)
-		}
 		ret[i] = fbType{
 			name: k,
 			ty:   convertedTy,
@@ -73,7 +70,11 @@ type fbType struct {
 	ty   string
 }
 
-func newStruct(name string, tys []fbType) string {
+func newStruct(name string, tys []fbType, c bool) string {
+	if c {
+		name = strings.Title(name)
+	}
+
 	b := strings.Builder{}
 	b.WriteString(fmt.Sprintf("table %s_e {\n", name))
 	for i := range tys {
