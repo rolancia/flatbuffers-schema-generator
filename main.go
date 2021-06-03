@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/rolancia/flatbuffers-schema-generator/lib"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -24,10 +24,15 @@ func main() {
 		panic(err)
 	}
 
-	_, targetName := path.Split(dbPath)
-	ext := path.Ext(targetName)
+	_, targetName := filepath.Split(dbPath)
+	ext := filepath.Ext(targetName)
 	name := strings.Replace(targetName, ext, "", -1)
-	outPath := path.Join("./", fmt.Sprintf("%s.%s", name, "fbs"))
+	workDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		panic(err)
+	}
+	outPath := filepath.Join(workDir, fmt.Sprintf("%s.%s", name, "fbs"))
+	fmt.Println("out:", outPath)
 
 	if err := save(outPath, result); err != nil {
 		panic(err)
