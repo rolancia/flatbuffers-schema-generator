@@ -24,10 +24,10 @@ func main() {
 		panic(err)
 	}
 
-	targetDir, targetName := path.Split(dbPath)
+	_, targetName := path.Split(dbPath)
 	ext := path.Ext(targetName)
 	name := strings.Replace(targetName, ext, "", -1)
-	outPath := path.Join(targetDir, fmt.Sprintf("%s.%s", name, "fbs"))
+	outPath := path.Join("./", fmt.Sprintf("%s.%s", name, "fbs"))
 
 	if err := save(outPath, result); err != nil {
 		panic(err)
