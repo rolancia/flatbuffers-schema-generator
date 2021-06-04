@@ -74,7 +74,11 @@ import (
 func i64Str() string {
 	return `
 func i64(v interface{}) int64 {
-	return v.(int64)
+	vv, ok := v.(int64)
+	if ok == false {
+		vv = 0
+	}
+	return vv
 }
 `
 }
@@ -82,7 +86,11 @@ func i64(v interface{}) int64 {
 func f64Str() string {
 	return `
 func f64(v interface{}) float64 {
-	return v.(float64)
+	vv, ok := v.(float64)
+	if ok == false {
+		vv = 0.0
+	}
+	return vv
 }
 `
 }
@@ -90,8 +98,11 @@ func f64(v interface{}) float64 {
 func strStr() string {
 	return `
 func str(b *flatbuffers.Builder, v interface{}) flatbuffers.UOffsetT {
-	s := v.(string)
-	p := b.CreateByteString([]byte(s))
+	vv, ok := v.(string)
+	if ok == false {
+		vv = ""
+	}
+	p := b.CreateByteString([]byte(vv))
 	return p
 }
 `
