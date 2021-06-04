@@ -12,6 +12,7 @@ import (
 func main() {
 	var (
 		startsWithCapital = flag.Bool("sc", false, "whether to start with capitalized (title)")
+		withMaker         = flag.Bool("maker", false, "whether to create makers")
 		namespace         = flag.String("ns", "Default", "namespace of fbs")
 		dbPath            = ""
 	)
@@ -35,6 +36,18 @@ func main() {
 
 	if err := save(outPath, result); err != nil {
 		panic(err)
+	}
+
+	if *withMaker {
+		makeOutPath := filepath.Join(workDir, fmt.Sprintf("%s.%s", name, "go"))
+		genedMaker, err := lib.GenerateMaker(outPath)
+		if err != nil {
+			panic(err)
+		}
+
+		if err := save(makeOutPath, genedMaker); err != nil {
+			panic(err)
+		}
 	}
 }
 

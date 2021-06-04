@@ -37,6 +37,13 @@ func writeStringL(b *strings.Builder, str string) {
 	}
 }
 
+func writeStringTL(b *strings.Builder, str string) {
+	_, err := b.WriteString(fmt.Sprintf("\t%s\n", str))
+	if err != nil {
+		panic(err)
+	}
+}
+
 func inferType(arr interface{}) []fbType {
 	vof := reflect.ValueOf(arr).Index(0)
 	keys := vof.MapKeys()
