@@ -22,7 +22,18 @@ func Generate(dbPath string, namespace string, capital bool) (string, error) {
 	b := strings.Builder{}
 	writeStringL(&b, newNamespace(namespace))
 
-	for tName, tRow := range j {
+	sortedKeys := make([]string, 0, len(j))
+	for k := range j {
+		sortedKeys = append(sortedKeys, k)
+	}
+
+	sort.Slice(sortedKeys, func(i, j int) bool {
+		return sortedKeys[i] < sortedKeys[j]
+	})
+
+	for i := range sortedKeys {
+		tName := sortedKeys[i]
+		tRow := j[tName]
 		tys := inferType(tRow)
 		writeStringL(&b, newStruct(tName, tys, capital))
 	}
